@@ -74,7 +74,9 @@ def vevent(city, date, code, hi, lo, stamp, updated_local, include_city_name):
         f"UID:{slugify(city['name'])}-{date}@my-weather",
         f"DTSTAMP:{stamp}",
         f"DTSTART;VALUE=DATE:{date.replace('-', '')}",
-        "SUMMARY:" + ics_escape(f"{emoji} {round(hi)}°/{round(lo)}°{label}"),
+        # Temps first: titles starting with a digit sort above letter-titled
+        # all-day events in Apple Calendar; a leading emoji sorts below them.
+        "SUMMARY:" + ics_escape(f"{round(hi)}°/{round(lo)}° {emoji}{label}"),
         "DESCRIPTION:" + ics_escape(
             f"{city['name']}: {desc}. High {round(hi)}°, low {round(lo)}°."
             f" Updated {updated_local}."
