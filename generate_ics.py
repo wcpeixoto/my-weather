@@ -79,6 +79,8 @@ def vevent(city, date, code, hi, lo, stamp, updated_local, include_city_name):
             f"{city['name']}: {desc}. High {round(hi)}°, low {round(lo)}°."
             f" Updated {updated_local}."
         ),
+        # Tapping the event's URL opens the Apple Weather app
+        f"URL:weather://open?lat={city['lat']}&lng={city['lon']}",
         "TRANSP:TRANSPARENT",
         "END:VEVENT",
     ]
