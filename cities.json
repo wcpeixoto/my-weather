@@ -1,5 +1,5 @@
 {
-  "unit": "fahrenheit",
+  "unit": "celsius",
   "cities": [
     { "name": "Virginia Beach", "lat": 36.8585, "lon": -76.0019 }
   ]

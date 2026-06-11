@@ -1,0 +1,11 @@
+{
+  "unit": "celsius",
+  "feeds": [
+    {
+      "name": "Virginia Beach",
+      "lat": 36.8585,
+      "lon": -76.0019,
+      "file": "virginia-beach.ics"
+    }
+  ]
+}

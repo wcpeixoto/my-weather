@@ -314,6 +314,32 @@
             color: white;
         }
 
+        .card-actions {
+            padding: 0 24px 20px;
+        }
+
+        .subscribe-link {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #f5f5f7;
+            color: #86868b;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .subscribe-link:hover {
+            background: #ff9500;
+            color: white;
+        }
+
         .card-message {
             padding: 28px 24px;
             text-align: center;
@@ -389,6 +415,8 @@
         const STORAGE_UNIT = 'myweather.unit';
         const FORECAST_DAYS = 16;
         const DAYS_COLLAPSED = 7;
+        const FEED_HOST = 'wcpeixoto.github.io/my-weather/calendars/';
+        const FEED_EDIT_URL = 'https://github.com/wcpeixoto/my-weather/edit/main/cities.json';
 
         // WMO weather codes -> emoji + description
         const WEATHER_CODES = {
@@ -438,6 +466,32 @@
                        ? 'fahrenheit' : 'celsius');
         let geoState = { status: 'pending', place: null, data: null };
         const expandedCards = new Set();
+        let feeds = [];
+
+        // Calendar feeds exist only for cities in the repo's cities.json;
+        // the generator publishes this manifest so cards can offer subscribe links.
+        fetch(`https://${FEED_HOST}feeds.json`)
+            .then(r => r.json())
+            .then(d => { feeds = d.feeds || []; render(); })
+            .catch(() => {});
+
+        function findFeed(lat, lon) {
+            return feeds.find(f => Math.abs(f.lat - lat) < 0.08 && Math.abs(f.lon - lon) < 0.08);
+        }
+
+        function actionsHTML(lat, lon, name) {
+            if (lat == null || lon == null) return '';
+            const feed = findFeed(lat, lon);
+            if (feed) {
+                return `<div class="card-actions">
+                    <a class="subscribe-link" href="webcal://${FEED_HOST}${feed.file}">📅 Subscribe in Apple Calendar</a>
+                </div>`;
+            }
+            const safeName = String(name).replace(/"/g, '&quot;');
+            return `<div class="card-actions">
+                <button class="subscribe-link" data-nofeed="${safeName}" data-lat="${lat}" data-lon="${lon}">📅 Get calendar feed</button>
+            </div>`;
+        }
 
         function saveCities() {
             localStorage.setItem(STORAGE_CITIES, JSON.stringify(cities));
@@ -571,7 +625,8 @@
                         </div>
                     </div>`
                     + currentBarHTML(geoState.data)
-                    + forecastHTML(geoState.data, 'geo');
+                    + forecastHTML(geoState.data, 'geo')
+                    + actionsHTML(geoState.lat, geoState.lon, geoState.place);
             } else if (geoState.status === 'pending') {
                 html += '<div class="card-message">📍 Finding your location…</div>';
             } else if (geoState.status === 'loading') {
@@ -597,7 +652,8 @@
                 if (city.error) {
                     html += `<div class="card-message">Couldn’t load forecast.<br><button class="pill-btn" data-retry="${i}">Try again</button></div>`;
                 } else if (city.data) {
-                    html += currentBarHTML(city.data) + forecastHTML(city.data, 'city' + i);
+                    html += currentBarHTML(city.data) + forecastHTML(city.data, 'city' + i)
+                        + actionsHTML(city.lat, city.lon, city.name);
                 } else {
                     html += '<div class="card-message">Loading…</div>';
                 }
@@ -743,6 +799,17 @@
             // Retry a failed city
             const retry = e.target.closest('[data-retry]');
             if (retry) { loadCity(+retry.dataset.retry); return; }
+
+            // No calendar feed for this location yet — offer to add it
+            const nofeed = e.target.closest('[data-nofeed]');
+            if (nofeed) {
+                const { nofeed: name, lat, lon } = nofeed.dataset;
+                const line = `{ "name": "${name}", "lat": ${(+lat).toFixed(4)}, "lon": ${(+lon).toFixed(4)} }`;
+                if (confirm(`No calendar feed exists yet for ${name}.\n\nFeeds are defined in cities.json in the my-weather repo. Open it on GitHub and add this line to the cities list:\n\n${line}\n\nThe next hourly update will create the feed.`)) {
+                    window.open(FEED_EDIT_URL, '_blank');
+                }
+                return;
+            }
 
             // Expand/collapse 16-day forecast
             const exp = e.target.closest('[data-expand]');

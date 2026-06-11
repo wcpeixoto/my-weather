@@ -130,6 +130,14 @@ def main():
     (OUT_DIR / "all.ics").write_text(vcalendar("Weather — All Cities", all_events), encoding="utf-8")
     print(f"wrote all.ics: {len(config['cities'])} cities")
 
+    # Manifest so the web app can offer subscribe links per location
+    feeds = [
+        {"name": c["name"], "lat": c["lat"], "lon": c["lon"], "file": f"{slugify(c['name'])}.ics"}
+        for c in config["cities"]
+    ]
+    (OUT_DIR / "feeds.json").write_text(json.dumps({"unit": unit, "feeds": feeds}, indent=2) + "\n")
+    print(f"wrote feeds.json: {len(feeds)} feeds")
+
 
 if __name__ == "__main__":
     main()
