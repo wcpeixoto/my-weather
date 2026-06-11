@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Weather - Forecasts for your cities</title>
+    <meta name="description" content="Minimal weather dashboard: your current location plus any cities you choose. Powered by Open-Meteo.">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌤️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f7;
+            min-height: 100vh;
+            color: #1d1d1f;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+        }
+
+        /* Branding */
+        .branding {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .logo-text {
+            font-size: 44px;
+            font-weight: 700;
+            color: #ff9500;
+            margin-bottom: 8px;
+        }
+
+        .sub-tagline {
+            font-size: 17px;
+            color: #86868b;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 240px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 16px;
+            font-family: inherit;
+            border: 1px solid #e8e8ed;
+            border-radius: 12px;
+            background: white;
+            color: #1d1d1f;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .search-input:focus {
+            border-color: #ff9500;
+            box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.15);
+        }
+
+        .search-results {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e8e8ed;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            overflow: hidden;
+            z-index: 50;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .search-result {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 13px 18px;
+            border: none;
+            background: white;
+            font-size: 15px;
+            font-family: inherit;
+            color: #1d1d1f;
+            cursor: pointer;
+        }
+
+        .search-result:hover {
+            background: #ff9500;
+            color: white;
+        }
+
+        .search-result:hover .result-detail {
+            color: rgba(255,255,255,0.85);
+        }
+
+        .result-detail {
+            color: #86868b;
+            font-size: 13px;
+        }
+
+        .pill-btn {
+            padding: 13px 18px;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: inherit;
+            border: none;
+            border-radius: 12px;
+            background: white;
+            color: #1d1d1f;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .pill-btn:hover {
+            background: #ff9500;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .unit-toggle {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+
+        .unit-toggle button {
+            padding: 13px 16px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            background: transparent;
+            color: #86868b;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .unit-toggle button.active {
+            background: #ff9500;
+            color: white;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .weather-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .weather-card.hero {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            padding: 20px 24px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #86868b;
+            margin-top: 2px;
+        }
+
+        .remove-btn {
+            border: none;
+            background: transparent;
+            color: #c7c7cc;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.15s;
+        }
+
+        .remove-btn:hover {
+            background: #f5f5f7;
+            color: #ff3b30;
+        }
+
+        .current-bar {
+            background: #ff9500;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: white;
+        }
+
+        .current-emoji {
+            font-size: 34px;
+            line-height: 1;
+        }
+
+        .current-temp {
+            font-size: 34px;
+            font-weight: 500;
+        }
+
+        .current-desc {
+            font-size: 15px;
+            opacity: 0.92;
+            line-height: 1.4;
+        }
+
+        .forecast {
+            padding: 14px 24px 20px;
+        }
+
+        .forecast-row {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 16px;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .forecast-row:last-child {
+            border-bottom: none;
+        }
+
+        .forecast-day {
+            flex: 1;
+            color: #424245;
+        }
+
+        .forecast-emoji {
+            width: 44px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .forecast-temps {
+            width: 110px;
+            text-align: right;
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .forecast-temps .low {
+            color: #86868b;
+            font-weight: 400;
+        }
+
+        .expand-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border: none;
+            border-radius: 10px;
+            background: #f5f5f7;
+            color: #86868b;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .expand-btn:hover {
+            background: #ff9500;
+            color: white;
+        }
+
+        .card-message {
+            padding: 28px 24px;
+            text-align: center;
+            color: #86868b;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .card-message .pill-btn {
+            margin-top: 14px;
+            background: #f5f5f7;
+            box-shadow: none;
+        }
+
+        .empty-hint {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 48px 24px;
+            color: #86868b;
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        footer a {
+            color: #ff9500;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 28px 14px 40px; }
+            .logo-text { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="branding">
+            <div class="logo-text">🌤️ My Weather</div>
+            <div class="sub-tagline">Your location, your cities. Nothing else.</div>
+        </div>
+
+        <div class="controls">
+            <div class="search-wrap">
+                <input type="text" class="search-input" id="citySearch"
+                       placeholder="Add a city or zip… (e.g. Lisbon, 33131, 10115 de)"
+                       autocomplete="off">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+            <div class="unit-toggle" id="unitToggle">
+                <button data-unit="celsius">°C</button>
+                <button data-unit="fahrenheit">°F</button>
+            </div>
+            <button class="pill-btn" id="refreshBtn" title="Refresh all forecasts">↻</button>
+        </div>
+
+        <div class="cards" id="cards"></div>
+
+        <footer>
+            Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>
+            · Updated <span id="lastUpdated">—</span>
+        </footer>
+    </div>
+
+    <script>
+        const STORAGE_CITIES = 'myweather.cities';
+        const STORAGE_UNIT = 'myweather.unit';
+        const FORECAST_DAYS = 16;
+        const DAYS_COLLAPSED = 7;
+
+        // WMO weather codes -> emoji + description
+        const WEATHER_CODES = {
+            0: ['☀️', 'Clear sky'],
+            1: ['🌤️', 'Mostly clear'],
+            2: ['⛅', 'Partly cloudy'],
+            3: ['☁️', 'Overcast'],
+            45: ['🌫️', 'Fog'],
+            48: ['🌫️', 'Icy fog'],
+            51: ['🌦️', 'Light drizzle'],
+            53: ['🌦️', 'Drizzle'],
+            55: ['🌧️', 'Heavy drizzle'],
+            56: ['🌧️', 'Freezing drizzle'],
+            57: ['🌧️', 'Freezing drizzle'],
+            61: ['🌧️', 'Light rain'],
+            63: ['🌧️', 'Rain'],
+            65: ['🌧️', 'Heavy rain'],
+            66: ['🌧️', 'Freezing rain'],
+            67: ['🌧️', 'Freezing rain'],
+            71: ['🌨️', 'Light snow'],
+            73: ['🌨️', 'Snow'],
+            75: ['❄️', 'Heavy snow'],
+            77: ['🌨️', 'Snow grains'],
+            80: ['🌦️', 'Light showers'],
+            81: ['🌧️', 'Showers'],
+            82: ['⛈️', 'Heavy showers'],
+            85: ['🌨️', 'Snow showers'],
+            86: ['❄️', 'Snow showers'],
+            95: ['⛈️', 'Thunderstorm'],
+            96: ['⛈️', 'Storm with hail'],
+            99: ['⛈️', 'Storm with hail'],
+        };
+
+        function weatherInfo(code) {
+            return WEATHER_CODES[code] || ['🌡️', 'Unknown'];
+        }
+
+        function flagEmoji(countryCode) {
+            if (!countryCode || countryCode.length !== 2) return '';
+            return String.fromCodePoint(...[...countryCode.toUpperCase()].map(c => 0x1F1A5 + c.charCodeAt(0)));
+        }
+
+        // --- State ---
+        let cities = JSON.parse(localStorage.getItem(STORAGE_CITIES) || '[]');
+        let unit = localStorage.getItem(STORAGE_UNIT) ||
+                   (/-(US|BS|BZ|KY|PW)\b/i.test(navigator.language) || navigator.language === 'en-US'
+                       ? 'fahrenheit' : 'celsius');
+        let geoState = { status: 'pending', place: null, data: null };
+        const expandedCards = new Set();
+
+        function saveCities() {
+            localStorage.setItem(STORAGE_CITIES, JSON.stringify(cities));
+        }
+
+        // --- Data fetching ---
+        async function fetchForecast(lat, lon) {
+            const url = 'https://api.open-meteo.com/v1/forecast' +
+                `?latitude=${lat}&longitude=${lon}` +
+                '&current=temperature_2m,apparent_temperature,weather_code' +
+                '&daily=weather_code,temperature_2m_max,temperature_2m_min' +
+                `&temperature_unit=${unit}&timezone=auto&forecast_days=${FORECAST_DAYS}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Forecast request failed');
+            return res.json();
+        }
+
+        async function reverseGeocode(lat, lon) {
+            try {
+                const res = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client' +
+                    `?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+                const d = await res.json();
+                return d.city || d.locality || d.principalSubdivision || 'My Location';
+            } catch {
+                return 'My Location';
+            }
+        }
+
+        async function searchCities(query) {
+            const res = await fetch('https://geocoding-api.open-meteo.com/v1/search' +
+                `?name=${encodeURIComponent(query)}&count=6&language=en&format=json`);
+            const d = await res.json();
+            return d.results || [];
+        }
+
+        // Zip/postal code detection. Defaults: 5 digits -> US, 0000-000 -> PT,
+        // A1A -> CA, AA1 -> GB. Any country via explicit suffix: "10115 de".
+        function detectZip(query) {
+            let code = query.trim(), country = null;
+            const withCountry = code.match(/^(.*\d.*?)[,\s]+([a-z]{2})$/i);
+            if (withCountry) {
+                code = withCountry[1].trim();
+                country = withCountry[2].toLowerCase();
+            }
+            if (!/^[a-z0-9][a-z0-9\s-]{1,9}$/i.test(code) || !/\d/.test(code)) return null;
+            if (!country) {
+                if (/^\d{5}(-\d{4})?$/.test(code)) country = 'us';
+                else if (/^\d{4}-\d{3}$/.test(code)) country = 'pt';
+                else if (/^[a-z]\d[a-z]/i.test(code)) country = 'ca';
+                else if (/^[a-z]{1,2}\d/i.test(code)) country = 'gb';
+                else return null;
+            }
+            if (country === 'us') code = code.slice(0, 5);
+            if (country === 'ca') code = code.replace(/[\s-]/g, '').slice(0, 3);
+            return { code, country };
+        }
+
+        async function searchZip(zip) {
+            try {
+                const res = await fetch(`https://api.zippopotam.us/${zip.country}/${encodeURIComponent(zip.code)}`);
+                if (!res.ok) return [];
+                const d = await res.json();
+                if (!d.places) return [];
+                return d.places.slice(0, 3).map(p => ({
+                    name: p['place name'].split(' (')[0],
+                    admin1: p.state || '',
+                    country: d.country || '',
+                    country_code: d['country abbreviation'] || '',
+                    latitude: +p.latitude,
+                    longitude: +p.longitude,
+                    postcode: d['post code'] || '',
+                }));
+            } catch {
+                return [];
+            }
+        }
+
+        // --- Rendering ---
+        function dayLabel(dateStr, index, todayStr) {
+            if (dateStr === todayStr) return 'Today';
+            const date = new Date(dateStr + 'T12:00:00');
+            if (index <= 1 && dateStr !== todayStr) {
+                const today = new Date(todayStr + 'T12:00:00');
+                if ((date - today) / 86400000 === 1) return 'Tomorrow';
+            }
+            return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+
+        function forecastHTML(data, cardId) {
+            const { time, weather_code, temperature_2m_max, temperature_2m_min } = data.daily;
+            const todayStr = time[0];
+            const expanded = expandedCards.has(cardId);
+            const shown = expanded ? time.length : Math.min(DAYS_COLLAPSED, time.length);
+            let rows = '';
+            for (let i = 0; i < shown; i++) {
+                const [emoji] = weatherInfo(weather_code[i]);
+                rows += `<div class="forecast-row">
+                    <span class="forecast-day">${dayLabel(time[i], i, todayStr)}</span>
+                    <span class="forecast-emoji">${emoji}</span>
+                    <span class="forecast-temps">${Math.round(temperature_2m_max[i])}° <span class="low">/ ${Math.round(temperature_2m_min[i])}°</span></span>
+                </div>`;
+            }
+            const more = time.length - DAYS_COLLAPSED;
+            const toggle = more > 0
+                ? `<button class="expand-btn" data-expand="${cardId}">${expanded ? 'Show less' : `Show ${more} more days`}</button>`
+                : '';
+            return `<div class="forecast">${rows}${toggle}</div>`;
+        }
+
+        function currentBarHTML(data) {
+            const cur = data.current;
+            const [emoji, desc] = weatherInfo(cur.weather_code);
+            return `<div class="current-bar">
+                <span class="current-emoji">${emoji}</span>
+                <span class="current-temp">${Math.round(cur.temperature_2m)}°</span>
+                <span class="current-desc">${desc}<br>Feels like ${Math.round(cur.apparent_temperature)}°</span>
+            </div>`;
+        }
+
+        function render() {
+            const cards = document.getElementById('cards');
+            let html = '';
+
+            // Hero: current location
+            html += '<div class="weather-card hero">';
+            if (geoState.status === 'ready' && geoState.data) {
+                html += `<div class="card-header">
+                        <div>
+                            <div class="card-title">📍 ${geoState.place}</div>
+                            <div class="card-subtitle">Your current location</div>
+                        </div>
+                    </div>`
+                    + currentBarHTML(geoState.data)
+                    + forecastHTML(geoState.data, 'geo');
+            } else if (geoState.status === 'pending') {
+                html += '<div class="card-message">📍 Finding your location…</div>';
+            } else if (geoState.status === 'loading') {
+                html += '<div class="card-message">📍 Loading your local forecast…</div>';
+            } else {
+                html += `<div class="card-message">
+                    📍 Location is off — your local weather will appear here.<br>
+                    <button class="pill-btn" id="enableGeo">Use my location</button>
+                </div>`;
+            }
+            html += '</div>';
+
+            // City cards
+            cities.forEach((city, i) => {
+                html += `<div class="weather-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">${city.name}</div>
+                            <div class="card-subtitle">${flagEmoji(city.country_code)} ${[city.admin1, city.country].filter(Boolean).join(', ')}${city.postcode ? ' · ' + city.postcode : ''}</div>
+                        </div>
+                        <button class="remove-btn" data-remove="${i}" title="Remove ${city.name}">✕</button>
+                    </div>`;
+                if (city.error) {
+                    html += `<div class="card-message">Couldn’t load forecast.<br><button class="pill-btn" data-retry="${i}">Try again</button></div>`;
+                } else if (city.data) {
+                    html += currentBarHTML(city.data) + forecastHTML(city.data, 'city' + i);
+                } else {
+                    html += '<div class="card-message">Loading…</div>';
+                }
+                html += '</div>';
+            });
+
+            if (cities.length === 0) {
+                html += `<div class="empty-hint">Search above to add your first location — a city name or a zip code.<br>
+                    Add as many as you like; your list is saved on this device and loads automatically next time.</div>`;
+            }
+
+            cards.innerHTML = html;
+        }
+
+        function stampUpdated() {
+            document.getElementById('lastUpdated').textContent =
+                new Date().toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+        }
+
+        // --- Loading orchestration ---
+        async function loadCity(i) {
+            const city = cities[i];
+            city.data = null;
+            city.error = false;
+            render();
+            try {
+                city.data = await fetchForecast(city.lat, city.lon);
+            } catch {
+                city.error = true;
+            }
+            render();
+            stampUpdated();
+        }
+
+        function requestGeolocation() {
+            if (!navigator.geolocation) {
+                geoState.status = 'unavailable';
+                render();
+                return;
+            }
+            geoState.status = 'pending';
+            render();
+            navigator.geolocation.getCurrentPosition(async pos => {
+                geoState.status = 'loading';
+                render();
+                const { latitude, longitude } = pos.coords;
+                try {
+                    const [data, place] = await Promise.all([
+                        fetchForecast(latitude, longitude),
+                        reverseGeocode(latitude, longitude),
+                    ]);
+                    geoState = { status: 'ready', place, data, lat: latitude, lon: longitude };
+                } catch {
+                    geoState.status = 'unavailable';
+                }
+                render();
+                stampUpdated();
+            }, () => {
+                geoState.status = 'unavailable';
+                render();
+            }, { timeout: 10000, maximumAge: 600000 });
+        }
+
+        function refreshAll() {
+            cities.forEach((_, i) => loadCity(i));
+            if (geoState.status === 'ready') {
+                fetchForecast(geoState.lat, geoState.lon)
+                    .then(data => { geoState.data = data; render(); stampUpdated(); })
+                    .catch(() => {});
+            } else if (geoState.status === 'unavailable') {
+                // leave as-is; user can press the button
+            } else {
+                requestGeolocation();
+            }
+        }
+
+        // --- Search UI ---
+        const searchInput = document.getElementById('citySearch');
+        const resultsBox = document.getElementById('searchResults');
+        let searchTimer = null;
+
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            const q = searchInput.value.trim();
+            if (q.length < 2) {
+                resultsBox.classList.remove('active');
+                return;
+            }
+            searchTimer = setTimeout(async () => {
+                try {
+                    const zip = detectZip(q);
+                    const [zipResults, nameResults] = await Promise.all([
+                        zip ? searchZip(zip) : Promise.resolve([]),
+                        searchCities(q),
+                    ]);
+                    const results = [...zipResults, ...nameResults].slice(0, 6);
+                    if (!results.length) {
+                        resultsBox.innerHTML = '<div class="search-result" style="cursor:default">No matches — try a city name, US zip, or “code + country” like 10115 de</div>';
+                    } else {
+                        resultsBox.innerHTML = results.map((r, i) =>
+                            `<button class="search-result" data-pick="${i}">
+                                ${flagEmoji(r.country_code)} <strong>${r.name}</strong>
+                                <span class="result-detail">${[r.admin1, r.country].filter(Boolean).join(', ')}${r.postcode ? ' · ' + r.postcode : ''}</span>
+                            </button>`).join('');
+                        resultsBox._results = results;
+                    }
+                    resultsBox.classList.add('active');
+                } catch { /* network hiccup; ignore */ }
+            }, 300);
+        });
+
+        document.addEventListener('click', e => {
+            // Pick a search result
+            const pick = e.target.closest('[data-pick]');
+            if (pick && resultsBox._results) {
+                const r = resultsBox._results[+pick.dataset.pick];
+                const dup = cities.some(c =>
+                    Math.abs(c.lat - r.latitude) < 0.01 && Math.abs(c.lon - r.longitude) < 0.01);
+                if (!dup) {
+                    cities.push({
+                        name: r.name, admin1: r.admin1 || '', country: r.country || '',
+                        country_code: r.country_code || '', lat: r.latitude, lon: r.longitude,
+                        postcode: r.postcode || '',
+                    });
+                    saveCities();
+                    loadCity(cities.length - 1);
+                }
+                searchInput.value = '';
+                resultsBox.classList.remove('active');
+                return;
+            }
+            if (!e.target.closest('.search-wrap')) resultsBox.classList.remove('active');
+
+            // Remove a city
+            const rm = e.target.closest('[data-remove]');
+            if (rm) {
+                cities.splice(+rm.dataset.remove, 1);
+                saveCities();
+                render();
+                return;
+            }
+
+            // Retry a failed city
+            const retry = e.target.closest('[data-retry]');
+            if (retry) { loadCity(+retry.dataset.retry); return; }
+
+            // Expand/collapse 16-day forecast
+            const exp = e.target.closest('[data-expand]');
+            if (exp) {
+                const id = exp.dataset.expand;
+                expandedCards.has(id) ? expandedCards.delete(id) : expandedCards.add(id);
+                render();
+                return;
+            }
+
+            // Enable geolocation
+            if (e.target.id === 'enableGeo') requestGeolocation();
+        });
+
+        // --- Unit toggle ---
+        const unitToggle = document.getElementById('unitToggle');
+
+        function paintUnitToggle() {
+            unitToggle.querySelectorAll('button').forEach(b =>
+                b.classList.toggle('active', b.dataset.unit === unit));
+        }
+
+        unitToggle.addEventListener('click', e => {
+            const btn = e.target.closest('[data-unit]');
+            if (!btn || btn.dataset.unit === unit) return;
+            unit = btn.dataset.unit;
+            localStorage.setItem(STORAGE_UNIT, unit);
+            paintUnitToggle();
+            refreshAll();
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', refreshAll);
+
+        // --- Boot ---
+        paintUnitToggle();
+        render();
+        cities.forEach((_, i) => loadCity(i));
+        requestGeolocation();
+        setInterval(refreshAll, 30 * 60 * 1000); // refresh every 30 min
+    </script>
+</body>
+</html>
