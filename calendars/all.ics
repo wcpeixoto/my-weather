@@ -7,162 +7,152 @@ X-WR-CALNAME:Weather — All Cities
 REFRESH-INTERVAL;VALUE=DURATION:PT1H
 X-PUBLISHED-TTL:PT1H
 BEGIN:VEVENT
-UID:virginia-beach-2026-06-22@my-weather
-DTSTAMP:20260622T234654Z
-DTSTART;VALUE=DATE:20260622
-SUMMARY:34°/22° ⛈️ Virginia Beach
-DESCRIPTION:Virginia Beach: Thunderstorm. High 34°\, low 22°. Updated Jun
-  22\, 7:46 PM.
-URL:weather://open?lat=36.8585&lng=-76.0019
-TRANSP:TRANSPARENT
-END:VEVENT
-BEGIN:VEVENT
 UID:virginia-beach-2026-06-23@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260623
-SUMMARY:34°/22° ⛈️ Virginia Beach
-DESCRIPTION:Virginia Beach: Thunderstorm. High 34°\, low 22°. Updated Jun
-  22\, 7:46 PM.
+SUMMARY:32°/22° ⛈️ Virginia Beach
+DESCRIPTION:Virginia Beach: Thunderstorm. High 32°\, low 22°. Updated Jun
+  23\, 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-06-24@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260624
-SUMMARY:26°/20° ☁️ Virginia Beach
-DESCRIPTION:Virginia Beach: Overcast. High 26°\, low 20°. Updated Jun 22\
- , 7:46 PM.
+SUMMARY:27°/21° ☁️ Virginia Beach
+DESCRIPTION:Virginia Beach: Overcast. High 27°\, low 21°. Updated Jun 23\
+ , 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-06-25@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260625
 SUMMARY:29°/19° ☁️ Virginia Beach
-DESCRIPTION:Virginia Beach: Overcast. High 29°\, low 19°. Updated Jun 22\
- , 7:46 PM.
+DESCRIPTION:Virginia Beach: Overcast. High 29°\, low 19°. Updated Jun 23\
+ , 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-06-26@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260626
 SUMMARY:34°/22° 🌦️ Virginia Beach
 DESCRIPTION:Virginia Beach: Light drizzle. High 34°\, low 22°. Updated Ju
- n 22\, 7:46 PM.
+ n 23\, 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-06-27@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260627
-SUMMARY:27°/22° ⛈️ Virginia Beach
-DESCRIPTION:Virginia Beach: Thunderstorm. High 27°\, low 22°. Updated Jun
-  22\, 7:46 PM.
+SUMMARY:27°/22° 🌧️ Virginia Beach
+DESCRIPTION:Virginia Beach: Heavy drizzle. High 27°\, low 22°. Updated Ju
+ n 23\, 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-06-28@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260628
 SUMMARY:27°/22° ☁️ Virginia Beach
-DESCRIPTION:Virginia Beach: Overcast. High 27°\, low 22°. Updated Jun 22\
- , 7:46 PM.
+DESCRIPTION:Virginia Beach: Overcast. High 27°\, low 22°. Updated Jun 23\
+ , 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-06-29@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260629
 SUMMARY:26°/22° ⛅ Virginia Beach
 DESCRIPTION:Virginia Beach: Partly cloudy. High 26°\, low 22°. Updated Ju
- n 22\, 7:46 PM.
+ n 23\, 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-06-30@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260630
 SUMMARY:26°/21° ☁️ Virginia Beach
-DESCRIPTION:Virginia Beach: Overcast. High 26°\, low 21°. Updated Jun 22\
- , 7:46 PM.
+DESCRIPTION:Virginia Beach: Overcast. High 26°\, low 21°. Updated Jun 23\
+ , 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-07-01@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260701
 SUMMARY:27°/21° ☁️ Virginia Beach
-DESCRIPTION:Virginia Beach: Overcast. High 27°\, low 21°. Updated Jun 22\
- , 7:46 PM.
+DESCRIPTION:Virginia Beach: Overcast. High 27°\, low 21°. Updated Jun 23\
+ , 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-07-02@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260702
 SUMMARY:33°/20° 🌦️ Virginia Beach
 DESCRIPTION:Virginia Beach: Light drizzle. High 33°\, low 20°. Updated Ju
- n 22\, 7:46 PM.
+ n 23\, 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-07-03@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260703
 SUMMARY:31°/21° 🌦️ Virginia Beach
 DESCRIPTION:Virginia Beach: Light drizzle. High 31°\, low 21°. Updated Ju
- n 22\, 7:46 PM.
+ n 23\, 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-07-04@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260704
 SUMMARY:37°/22° 🌦️ Virginia Beach
-DESCRIPTION:Virginia Beach: Drizzle. High 37°\, low 22°. Updated Jun 22\,
-  7:46 PM.
+DESCRIPTION:Virginia Beach: Drizzle. High 37°\, low 22°. Updated Jun 23\,
+  12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-07-05@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260705
 SUMMARY:30°/22° ☁️ Virginia Beach
-DESCRIPTION:Virginia Beach: Overcast. High 30°\, low 22°. Updated Jun 22\
- , 7:46 PM.
+DESCRIPTION:Virginia Beach: Overcast. High 30°\, low 22°. Updated Jun 23\
+ , 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-07-06@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260706
 SUMMARY:27°/23° ☁️ Virginia Beach
-DESCRIPTION:Virginia Beach: Overcast. High 27°\, low 23°. Updated Jun 22\
- , 7:46 PM.
+DESCRIPTION:Virginia Beach: Overcast. High 27°\, low 23°. Updated Jun 23\
+ , 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
 BEGIN:VEVENT
 UID:virginia-beach-2026-07-07@my-weather
-DTSTAMP:20260622T234654Z
+DTSTAMP:20260623T043506Z
 DTSTART;VALUE=DATE:20260707
 SUMMARY:34°/23° 🌦️ Virginia Beach
 DESCRIPTION:Virginia Beach: Light drizzle. High 34°\, low 23°. Updated Ju
- n 22\, 7:46 PM.
+ n 23\, 12:35 AM.
 URL:weather://open?lat=36.8585&lng=-76.0019
 TRANSP:TRANSPARENT
 END:VEVENT
